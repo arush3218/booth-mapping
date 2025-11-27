@@ -10,6 +10,7 @@ from utils.data_utils import (
 )
 from utils.clustering_utils import process_ac_pc_clustering
 from utils.map_utils import create_and_save_map
+from utils.s3_utils import S3Manager
 import zipfile
 from io import BytesIO
 
@@ -31,6 +32,10 @@ def initialize_session_state():
         st.session_state.summary_data = None
     if 'selected_booths_data' not in st.session_state:
         st.session_state.selected_booths_data = None
+    if 's3_manager' not in st.session_state:
+        st.session_state.s3_manager = None
+    if 'use_s3' not in st.session_state:
+        st.session_state.use_s3 = False
 
 
 def get_column_name(gdf, patterns):
@@ -93,7 +98,19 @@ initialize_session_state()
 
 st.sidebar.header("Configuration")
 
-states = get_available_states()
+# Initialize S3 manager
+if st.session_state.s3_manager is None:
+    try:
+        with st.spinner("Connecting to S3..."):
+            st.session_state.s3_manager = S3Manager()
+            st.session_state.use_s3 = True
+        st.sidebar.success("✅ Connected to S3")
+    except Exception as e:
+        st.sidebar.error(f"Failed to connect to S3: {e}")
+        st.sidebar.info("Please check your credentials in credintials.json")
+        st.stop()
+
+states = get_available_states(s3_manager=st.session_state.s3_manager)
 if not states:
     st.error("No state data found in the Data/ directory. Please add state shapefiles.")
     st.stop()
@@ -103,7 +120,11 @@ selected_state = st.sidebar.selectbox("Select State", states)
 selection_type = st.sidebar.radio("Selection Type", ["AC wise", "PC wise"])
 
 if selected_state:
-    ac_pc_gdf, booths_gdf = prepare_booth_data(selected_state, selection_type)
+    ac_pc_gdf, booths_gdf = prepare_booth_data(
+        selected_state, 
+        selection_type,
+        s3_manager=st.session_state.s3_manager
+    )
     
     if ac_pc_gdf is None or booths_gdf is None:
         st.error(f"Could not load shapefiles for {selected_state}. Please check the data files.")
@@ -136,7 +157,6 @@ if selected_state:
     """)
     
     if st.sidebar.button("Generate Results for All", type="primary"):
-        # Determine column name for AC/PC code
         if selection_type == "AC wise":
             code_patterns = ['ac_no', 'ac', 'AC_NO', 'AC']
         else:

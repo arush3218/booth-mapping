@@ -1,12 +1,13 @@
+# Environment variables
+.env
+credintials.json
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
 build/
 develop-eggs/
 dist/
@@ -23,17 +24,13 @@ wheels/
 .installed.cfg
 *.egg
 
-# Streamlit
-.streamlit/
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
 
-# Data directory - too large for regular git, use Git LFS or store separately
-Data/
-
-# Output files
-output/maps/*.html
-output/*.csv
-
-# IDEs
+# IDE
 .vscode/
 .idea/
 *.swp
@@ -44,5 +41,15 @@ output/*.csv
 .DS_Store
 Thumbs.db
 
-# Jupyter
-.ipynb_checkpoints/
+# Output files
+output/
+*.csv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Streamlit
+.streamlit/
+
+# Data (if local)
+Data/

@@ -1,189 +1,310 @@
-# 🗺️ Booth Mapping and Clustering Tool
+# 🗺️ Indian Electoral Booth Sampling and Spatial Analysis Tool
 
-A Streamlit-based web application for mapping and clustering election booth locations using geospatial analysis and machine learning.
+A production-ready Streamlit web application for intelligent sampling and spatial analysis of Indian electoral polling booths using AWS S3, geospatial analysis, and machine learning clustering algorithms.
 
-## Overview
+## 🌟 Overview
 
-This tool helps analyze and select representative booth samples from Assembly Constituencies (AC) or Parliamentary Constituencies (PC) using KMeans clustering algorithms. It validates booth locations, creates clusters, and generates interactive maps with downloadable results.
+This tool helps electoral analysts and researchers perform systematic sampling of polling booths from Assembly Constituencies (AC) or Parliamentary Constituencies (PC) across Indian states. It uses KMeans clustering to ensure geographically distributed samples and provides interactive visualizations for analysis.
 
-## Features
+## ✨ Key Features
 
-- **State-wise Analysis**: Supports multiple Indian states with AC/PC level granularity
-- **Intelligent Clustering**: Uses KMeans algorithm to create optimal booth clusters
-- **Geospatial Validation**: Ensures all booths fall within their respective AC/PC boundaries
-- **Interactive Maps**: Generate Folium-based HTML maps with color-coded clusters
-- **Smart Selection**: Automatically selects 2 booths per cluster based on proximity to centroids
-- **Export Options**: Download summary and detailed booth data as CSV files
-- **Comprehensive UI**: User-friendly Streamlit interface with real-time processing
+- **☁️ Cloud-Native**: Fetches shapefiles directly from AWS S3 (no local storage required)
+- **🎯 Smart Clustering**: KMeans algorithm ensures geographically distributed booth selection
+- **🗺️ Interactive Maps**: Folium-based HTML maps with color-coded clusters
+- **📊 Batch Processing**: Process all ACs/PCs in a state simultaneously
+- **✅ Spatial Validation**: Ensures booths fall within constituency boundaries
+- **📥 Export Options**: Download summary and detailed booth data as CSV
+- **🚀 Real-time Processing**: Progress tracking with live updates
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-booth_mapping_project/
+BoothMapping/
 ├── app.py                      # Main Streamlit application
 ├── requirements.txt            # Python dependencies
-├── Data/                       # State-wise shapefiles
-│   ├── <state>/
-│   │   ├── <state>.assembly.shp       # Assembly constituency boundaries
-│   │   ├── <state>.parliamentary.shp  # Parliamentary constituency boundaries
-│   │   └── <state>.booth.shp          # Booth point locations
-├── utils/                      # Utility modules
+├── .env.example               # Environment variables template
+├── .gitignore                 # Git ignore rules
+├── README.md                  # This file
+├── utils/                     # Utility modules
 │   ├── __init__.py
-│   ├── data_utils.py          # Data loading and validation functions
-│   ├── clustering_utils.py    # KMeans clustering and booth selection
-│   └── map_utils.py           # Folium map generation and styling
-├── output/                     # Generated outputs
-│   ├── maps/                  # HTML map files
-│   ├── summary.csv            # Processing summary
-│   └── selected_booths.csv    # Selected booth details
-├── README.md                   # This file
-└── instructions.md            # Detailed project instructions
+│   ├── s3_utils.py           # AWS S3 operations
+│   ├── data_utils.py         # Data loading and validation
+│   ├── clustering_utils.py   # KMeans clustering logic
+│   └── map_utils.py          # Folium map generation
+└── output/                    # Generated outputs (git-ignored)
+    └── maps/                  # HTML map files
 ```
 
-## Installation
+## 🚀 Quick Start
 
-1. **Clone or download this project**
+### Prerequisites
 
-2. **Install Python dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+- Python 3.8 or higher
+- AWS account with S3 access
+- Shapefiles uploaded to S3 bucket
 
-3. **Prepare your data**:
-   - Place state shapefiles in the `Data/<state>/` directory
-   - Ensure files follow naming convention:
-     - `<state>.assembly.shp` for AC boundaries
-     - `<state>.parliamentary.shp` for PC boundaries
-     - `<state>.booth.shp` for booth locations
+### Installation
 
-## Usage
+1. **Clone the repository**:
+```bash
+git clone https://github.com/amarr07/Indian-Electoral-BoothSampling-and-Spatial-Analysis-Tool.git
+cd Indian-Electoral-BoothSampling-and-Spatial-Analysis-Tool
+```
 
-1. **Start the application**:
-   ```bash
-   streamlit run app.py
-   ```
+2. **Create virtual environment** (recommended):
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-2. **Configure analysis**:
-   - Select a state from the sidebar
-   - Choose selection type (AC wise or PC wise)
-   - Select specific AC/PC
-   - Set number of samples per AC/PC (default: 300)
+3. **Install dependencies**:
+```bash
+pip install -r requirements.txt
+```
 
-3. **Generate results**:
-   - Click "Generate Results" button
-   - View interactive map and statistics
-   - Download CSV files and HTML maps
+4. **Configure environment variables**:
+```bash
+cp .env.example .env
+```
 
-## Workflow
+Edit `.env` file with your AWS credentials:
+```env
+AWS_BUCKET_NAME=your-bucket-name
+AWS_ACCESS_KEY=your-access-key
+AWS_SECRET_KEY=your-secret-key
+AWS_BASE_PREFIX=shp_files_state_wise/
+```
+
+5. **Run the application**:
+```bash
+streamlit run app.py
+```
+
+## 📊 S3 Data Structure
+
+Your S3 bucket should follow this structure:
+
+```
+your-bucket-name/
+└── shp_files_state_wise/
+    ├── andhrapradesh/
+    │   ├── andhrapradesh.assembly.shp
+    │   ├── andhrapradesh.assembly.shx
+    │   ├── andhrapradesh.assembly.dbf
+    │   ├── andhrapradesh.assembly.prj
+    │   ├── andhrapradesh.parliamentary.shp
+    │   ├── andhrapradesh.parliamentary.shx
+    │   ├── andhrapradesh.parliamentary.dbf
+    │   ├── andhrapradesh.parliamentary.prj
+    │   ├── andhrapradesh.booth.shp
+    │   ├── andhrapradesh.booth.shx
+    │   ├── andhrapradesh.booth.dbf
+    │   └── andhrapradesh.booth.prj
+    ├── maharashtra/
+    │   └── [similar structure]
+    └── [other states...]
+```
+
+## 🎯 How to Use
+
+1. **Launch Application**: The app automatically connects to your S3 bucket
+2. **Select State**: Choose from available states in the dropdown
+3. **Choose Analysis Type**: Select AC wise or PC wise
+4. **Configure Sampling**:
+   - Set samples per AC/PC (default: 300)
+   - Formula: clusters = samples ÷ 25
+   - Each cluster selects 2 booths
+5. **Generate Results**: Click "Generate Results for All"
+6. **Download Outputs**:
+   - Summary CSV (processing statistics)
+   - Selected Booths CSV (detailed booth information)
+   - HTML Maps (interactive visualizations)
+
+## 🔄 Processing Workflow
 
 ### 1. Data Loading
-- Scans `Data/` directory for available states
-- Loads AC/PC and booth shapefiles using GeoPandas
-- Validates data and extracts geospatial information
+- Connects to AWS S3 bucket
+- Lists available states
+- Downloads required shapefiles to temporary storage
 
-### 2. Booth Validation
-- Filters booths to ensure they fall within selected AC/PC polygon
-- Uses Shapely's spatial operations for validation
-- Extracts latitude/longitude coordinates
+### 2. Spatial Validation
+- Filters booths within selected AC/PC boundaries
+- Uses GeoPandas spatial operations
+- Extracts latitude/longitude coordinates (EPSG:4326)
 
-### 3. Clustering
-- Calculates cluster count: `round(samples_per_ac / 25)`
+### 3. Clustering Algorithm
+```
+Number of clusters = round(samples_per_ac / 25)
+```
 - Applies KMeans clustering to booth coordinates
-- Creates evenly distributed clusters across the AC/PC
+- Creates geographically distributed clusters
 
-### 4. Booth Selection
-- For each cluster, finds booths near the centroid:
-  - Primary range: 500m - 2km from centroid
-  - Extended range: up to 3km if needed
-- Selects 2 booths per cluster (closest to centroid)
-- Marks as "Not completed" if insufficient booths found
+### 4. Booth Selection Strategy
+For each cluster:
+- **Primary range**: 500m - 2km from centroid
+- **Extended range**: up to 3km if needed
+- Selects 2 nearest booths to centroid
+- Marks "Not completed" if insufficient booths
 
-### 5. Map Generation
-- Creates interactive Folium maps with:
-  - All booths color-coded by cluster
-  - Cluster centroids marked with icons
-  - Selected booths highlighted with star markers
-- Saves maps as HTML files in `output/maps/`
+### 5. Visualization
+- Interactive Folium maps with:
+  - All booths (color-coded by cluster)
+  - Cluster centroids (marked with icons)
+  - Selected booths (highlighted with stars)
+- Saved as HTML files
 
-### 6. Data Export
-- **summary.csv**: Processing status and statistics per AC/PC
-- **selected_booths.csv**: Detailed information for each selected booth
+### 6. Export
+- **summary.csv**: AC/PC-wise processing results
+- **selected_booths.csv**: Detailed booth information
+- **HTML maps**: One per AC/PC (zipped download)
 
-## Output Format
+## 📋 Output Format
 
 ### Summary CSV Columns
-- AC/PC code and name
-- Total_Booths
-- Selected_Booths
-- Status (Completed/Not completed)
-- Reason (if incomplete)
-- Samples_Requested
+| Column | Description |
+|--------|-------------|
+| AC/PC | Constituency code |
+| AC_Name/PC_Name | Constituency name |
+| Total_Booths | Total booths in constituency |
+| Selected_Booths | Number of booths selected |
+| Status | Completed / Not completed |
+| Reason | Explanation if incomplete |
+| Samples_Requested | Target sample size |
 
 ### Selected Booths CSV Columns
-- state
-- district, district_n
-- pc, pc_name
-- ac, ac_name
-- booth, booth_name
-- cluster
-- latitude, longitude
+| Column | Description |
+|--------|-------------|
+| state | State name |
+| district, district_n | District information |
+| pc, pc_name | Parliamentary constituency |
+| ac, ac_name | Assembly constituency |
+| booth, booth_name | Booth code and name |
+| cluster | Assigned cluster number |
+| latitude, longitude | GPS coordinates |
 
-## Requirements
+## 🔧 Configuration
 
-- Python 3.8+
-- streamlit >= 1.28.0
-- geopandas >= 0.14.0
-- pandas >= 2.0.0
-- numpy >= 1.24.0
-- folium >= 0.14.0
-- shapely >= 2.0.0
-- geopy >= 2.4.0
-- scikit-learn >= 1.3.0
+### Environment Variables
 
-## Data Format
+| Variable | Description | Example |
+|----------|-------------|---------|
+| AWS_BUCKET_NAME | S3 bucket name | `electoral-shapefiles` |
+| AWS_ACCESS_KEY | AWS access key ID | `AKIA...` |
+| AWS_SECRET_KEY | AWS secret access key | `wJalrXU...` |
+| AWS_BASE_PREFIX | Base folder in S3 | `shp_files_state_wise/` |
 
-Shapefiles should contain the following attributes (case-insensitive):
+### Shapefile Requirements
 
-**AC/PC Shapefiles**:
-- AC_NO/PC_NO or AC/PC (code)
-- AC_NAME/PC_NAME (name)
+**AC/PC Shapefiles** (Polygon):
+- `AC_NO`/`PC_NO` or `AC`/`PC` - Constituency code
+- `AC_NAME`/`PC_NAME` - Constituency name
 - Polygon geometry
 
-**Booth Shapefiles**:
-- BOOTH_NO or BOOTH (booth code)
-- BOOTH_NAME (booth name)
-- AC_NO/PC_NO (constituency reference)
-- DISTRICT, DISTRICT_N (district info)
+**Booth Shapefiles** (Point):
+- `BOOTH_NO` or `BOOTH` - Booth code
+- `BOOTH_NAME` - Booth name
+- `AC_NO`/`PC_NO` - Constituency reference
+- `DISTRICT`, `DISTRICT_N` - District info
 - Point geometry
 
-## Notes
+## 🛠️ Technology Stack
 
-- All spatial operations use latitude/longitude coordinates (EPSG:4326)
-- Cluster count is automatically calculated based on sample size
-- If total booths < samples requested, processing is marked as incomplete
-- Maps use OpenStreetMap tiles by default
-- Color palette supports up to 30 distinct cluster colors
+- **Frontend**: Streamlit 1.28+
+- **Geospatial**: GeoPandas, Shapely
+- **Mapping**: Folium
+- **ML**: scikit-learn (KMeans)
+- **Cloud**: AWS S3 (boto3)
+- **Data Processing**: Pandas, NumPy
 
-## Troubleshooting
+## 📦 Dependencies
 
-**No states showing up?**
-- Ensure Data/ directory exists and contains state folders
-- Check that shapefiles follow naming conventions
+See [requirements.txt](requirements.txt) for full list:
+- python-dotenv - Environment variable management
+- streamlit - Web application framework
+- geopandas - Geospatial data processing
+- boto3 - AWS S3 integration
+- scikit-learn - Machine learning (KMeans)
+- folium - Interactive maps
 
-**Error loading shapefiles?**
-- Verify all shapefile components exist (.shp, .shx, .dbf, .prj)
-- Check file permissions
+## 🔒 Security Best Practices
+
+1. **Never commit credentials**: Use `.env` file (git-ignored)
+2. **Use IAM roles**: Prefer IAM roles over access keys in production
+3. **Rotate keys**: Regularly rotate AWS access keys
+4. **Least privilege**: Grant minimum required S3 permissions
+5. **Use HTTPS**: S3 client uses encrypted connections by default
+
+### Required S3 Permissions
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-bucket-name",
+        "arn:aws:s3:::your-bucket-name/*"
+      ]
+    }
+  ]
+}
+```
+
+## 🐛 Troubleshooting
+
+**No states showing?**
+- Verify S3 bucket name and credentials
+- Check bucket structure matches expected format
+- Ensure IAM permissions are correct
+
+**Connection errors?**
+- Validate AWS credentials in `.env`
+- Check network connectivity
+- Verify S3 bucket region
+
+**Shapefile loading errors?**
+- Ensure all components present (.shp, .shx, .dbf, .prj)
+- Verify file naming conventions
+- Check CRS (coordinate reference system)
 
 **Incomplete selections?**
-- Reduce samples_per_ac value
-- Check booth distribution in the selected AC/PC
+- Reduce `samples_per_ac` value
+- Check booth distribution in constituency
 - Review cluster configuration
 
-## License
+## 📈 Performance Tips
 
-Please refer to Data/LICENSE.txt for data usage terms.
+- **Caching**: Streamlit caches S3 connections
+- **Batch processing**: Process multiple ACs/PCs at once
+- **Network**: Ensure stable internet for S3 access
+- **Memory**: Large states may require more RAM
 
-## Credits
+## 🤝 Contributing
 
-Data Source: Election Commission of India
-Built with: Streamlit, GeoPandas, Folium, scikit-learn
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make changes with clear commit messages
+4. Submit a pull request
+
+## 📄 License
+
+This project is provided as-is for electoral analysis and research purposes.
+
+## 🙏 Acknowledgments
+
+- **Data Source**: Election Commission of India
+- **Built with**: Streamlit, GeoPandas, Folium, scikit-learn
+- **Cloud Platform**: AWS S3
+
+## 📧 Contact
+
+For issues or questions, please open an issue on GitHub.
+
+---
+
+**⚠️ Important**: This tool is for research and analysis purposes. Ensure compliance with data usage policies and electoral regulations in your jurisdiction.

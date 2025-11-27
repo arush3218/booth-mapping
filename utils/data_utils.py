@@ -5,7 +5,10 @@ from shapely.geometry import Point
 from typing import List, Tuple, Optional
 
 
-def get_available_states(data_dir: str = "Data") -> List[str]:
+def get_available_states(data_dir: str = "Data", s3_manager=None) -> List[str]:
+    if s3_manager is not None:
+        return s3_manager.list_states()
+    
     if not os.path.exists(data_dir):
         return []
     
@@ -100,18 +103,22 @@ def extract_lat_lon(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return gdf
 
 
-def prepare_booth_data(state: str, selection_type: str, data_dir: str = "Data") -> Tuple[Optional[gpd.GeoDataFrame], Optional[gpd.GeoDataFrame]]:
-    state_dir = os.path.join(data_dir, state)
-    
-    if selection_type == "AC wise":
-        ac_pc_file = os.path.join(state_dir, f"{state}.assembly.shp")
+def prepare_booth_data(state: str, selection_type: str, data_dir: str = "Data", s3_manager=None) -> Tuple[Optional[gpd.GeoDataFrame], Optional[gpd.GeoDataFrame]]:s3_manager is not None:
+        file_type = "assembly" if selection_type == "AC wise" else "parliamentary"
+        ac_pc_gdf = s3_manager.load_shapefile_from_s3(state, file_type)
+        booths_gdf = s3_manager.load_shapefile_from_s3(state, "booth")
     else:
-        ac_pc_file = os.path.join(state_dir, f"{state}.parliamentary.shp")
-    
-    booths_file = os.path.join(state_dir, f"{state}.booth.shp")
-    
-    ac_pc_gdf = load_shapefile(ac_pc_file)
-    booths_gdf = load_shapefile(booths_file)
+        state_dir = os.path.join(data_dir, state)
+        
+        if selection_type == "AC wise":
+            ac_pc_file = os.path.join(state_dir, f"{state}.assembly.shp")
+        else:
+            ac_pc_file = os.path.join(state_dir, f"{state}.parliamentary.shp")
+        
+        booths_file = os.path.join(state_dir, f"{state}.booth.shp")
+        
+        ac_pc_gdf = load_shapefile(ac_pc_file)
+        booths_gdf = load_shapefile(booths_file)
     
     if booths_gdf is not None:
         booths_gdf = extract_lat_lon(booths_gdf)
