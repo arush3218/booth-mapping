@@ -115,11 +115,11 @@ if not states:
     st.error("No state data found in the Data/ directory. Please add state shapefiles.")
     st.stop()
 
-selected_state = st.sidebar.selectbox("Select State", states)
+selected_state = st.sidebar.selectbox("Select State", [""] + states)
 
 selection_type = st.sidebar.radio("Selection Type", ["AC wise", "PC wise"])
 
-if selected_state:
+if selected_state and selected_state != "":
     ac_pc_gdf, booths_gdf = prepare_booth_data(
         selected_state, 
         selection_type,
