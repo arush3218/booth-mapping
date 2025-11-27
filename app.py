@@ -366,4 +366,4 @@ else:
     """)
 
 st.markdown("---")
-st.markdown("Built with Streamlit • Data: Election Commission of India")
+st.markdown("Built with Streamlit ")
