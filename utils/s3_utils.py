@@ -11,11 +11,11 @@ class S3Manager:
     def __init__(self):
         try:
             import streamlit as st
-            self.bucket_name = st.secrets.get("BUCKET_NAME", os.getenv("BUCKET_NAME"))
+            self.bucket_name = st.secrets.get("AWS_BUCKET_NAME", os.getenv("AWS_BUCKET_NAME"))
             aws_access_key = st.secrets.get("AWS_ACCESS_KEY", os.getenv("AWS_ACCESS_KEY"))
             aws_secret_key = st.secrets.get("AWS_SECRET_KEY", os.getenv("AWS_SECRET_KEY"))
         except:
-            self.bucket_name = os.getenv("BUCKET_NAME")
+            self.bucket_name = os.getenv("AWS_BUCKET_NAME")
             aws_access_key = os.getenv("AWS_ACCESS_KEY")
             aws_secret_key = os.getenv("AWS_SECRET_KEY")
         
