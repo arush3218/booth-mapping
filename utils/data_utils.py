@@ -103,10 +103,11 @@ def extract_lat_lon(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     return gdf
 
 
-def prepare_booth_data(state: str, selection_type: str, data_dir: str = "Data", s3_manager=None) -> Tuple[Optional[gpd.GeoDataFrame], Optional[gpd.GeoDataFrame]]:s3_manager is not None:
+def prepare_booth_data(state: str, selection_type: str, data_dir: str = "Data", s3_manager=None) -> Tuple[Optional[gpd.GeoDataFrame], Optional[gpd.GeoDataFrame]]:
+    if s3_manager is not None:
         file_type = "assembly" if selection_type == "AC wise" else "parliamentary"
-        ac_pc_gdf = s3_manager.load_shapefile_from_s3(state, file_type)
-        booths_gdf = s3_manager.load_shapefile_from_s3(state, "booth")
+        ac_pc_gdf = s3_manager.load_shapefile(state, file_type)
+        booths_gdf = s3_manager.load_shapefile(state, "booth")
     else:
         state_dir = os.path.join(data_dir, state)
         
