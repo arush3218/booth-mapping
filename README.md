@@ -31,8 +31,7 @@ This tool helps electoral analysts and researchers perform systematic sampling o
 
 1. **Clone the repository**:
 ```bash
-git clone https://github.com/amarr07/Indian-Electoral-BoothSampling-and-Spatial-Analysis-Tool.git
-cd Indian-Electoral-BoothSampling-and-Spatial-Analysis-Tool
+git clone https://github.com/arush3218/booth-mapping/
 ```
 
 2. **Create virtual environment** (recommended):
