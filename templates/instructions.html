@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructions - Booth Mapping Tool</title>
+    <link rel="stylesheet" href="/static/css/instructions.css">
+</head>
+<body>
+    <div class="instructions-container">
+        <nav class="navbar">
+            <div class="nav-content">
+                <a href="/" class="logo">booth.mapping</a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/app" class="nav-link btn-nav-primary">Start Mapping</a>
+                </div>
+            </div>
+        </nav>
+
+        <main class="instructions-main">
+            <div class="content-wrapper">
+                <header class="page-header">
+                    <h1>📚 Documentation</h1>
+                    <p class="subtitle">Everything you need to know about the Booth Mapping Tool</p>
+                </header>
+
+                <section class="doc-section">
+                    <h2>🚀 Quick Start</h2>
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Select State</h3>
+                                <p>Choose a state from the dropdown menu. The tool loads state-specific boundary and booth data from cloud storage.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Choose Selection Type</h3>
+                                <p>Select either <strong>AC wise</strong> (Assembly Constituency) or <strong>PC wise</strong> (Parliamentary Constituency) analysis based on your requirements.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Configure Samples</h3>
+                                <p>Set samples per AC/PC (25-5000). This determines cluster count: <code>clusters = samples ÷ 25</code>. Each cluster selects 2 booths.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Generate Results</h3>
+                                <p>Click "Generate Results for All" to process all constituencies in the selected state. Processing time varies by state size.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="doc-section">
+                    <h2>✨ Features</h2>
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">🎯</div>
+                            <div>
+                                <h3>Automated Clustering</h3>
+                                <p>Uses KMeans clustering algorithm to intelligently divide constituencies into geographical clusters and select representative booths from each cluster.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🗺️</div>
+                            <div>
+                                <h3>Interactive Maps</h3>
+                                <p>View all booths color-coded by cluster with selected booths highlighted. Maps show cluster centroids and booth details on hover.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">📊</div>
+                            <div>
+                                <h3>CSV Export</h3>
+                                <p>Download comprehensive summary and detailed booth data as CSV files for further analysis in Excel or other tools.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">✅</div>
+                            <div>
+                                <h3>Boundary Validation</h3>
+                                <p>Ensures all booths fall within their respective AC/PC boundaries using spatial validation algorithms.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">☁️</div>
+                            <div>
+                                <h3>Cloud Integration</h3>
+                                <p>Seamless integration with AWS S3 for loading state shapefiles and booth data without local storage requirements.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="doc-section">
+                    <h2>📁 Output Files</h2>
+                    <div class="output-files">
+                        <div class="file-card">
+                            <div class="file-icon">📄</div>
+                            <h3>summary.csv</h3>
+                            <p>Overview of processing results including total booths, selected booths, and completion status for each constituency.</p>
+                        </div>
+                        <div class="file-card">
+                            <div class="file-icon">📋</div>
+                            <h3>selected_booths.csv</h3>
+                            <p>Detailed list of all selected booth locations with coordinates, cluster assignments, and administrative details.</p>
+                        </div>
+                        <div class="file-card">
+                            <div class="file-icon">🗺️</div>
+                            <h3>HTML Maps</h3>
+                            <p>Interactive Folium maps for each AC/PC showing booth locations, clusters, and selection markers. Downloadable as ZIP archive.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="doc-section">
+                    <h2>⚙️ Technical Details</h2>
+                    <div class="tech-details">
+                        <div class="tech-card">
+                            <h3>Clustering Algorithm</h3>
+                            <p>KMeans clustering (scikit-learn) divides booths into geographical clusters based on latitude/longitude coordinates.</p>
+                        </div>
+                        <div class="tech-card">
+                            <h3>Booth Selection</h3>
+                            <p>For each cluster, 2 booths are selected within 500m-3km of the centroid, prioritizing the 500m-2km range.</p>
+                        </div>
+                        <div class="tech-card">
+                            <h3>Spatial Processing</h3>
+                            <p>GeoPandas and Shapely for spatial operations, coordinate transformations, and boundary validation.</p>
+                        </div>
+                        <div class="tech-card">
+                            <h3>Distance Calculation</h3>
+                            <p>Geopy's geodesic function calculates accurate distances between booth coordinates and cluster centroids.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="doc-section cta-section">
+                    <h2>Ready to Start?</h2>
+                    <p>Begin mapping electoral booths with intelligent spatial analysis</p>
+                    <a href="/app" class="btn btn-primary-large">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polygon points="10 8 16 12 10 16 10 8"/>
+                        </svg>
+                        Launch Application
+                    </a>
+                </section>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2025 Booth Mapping Tool • Powered by FastAPI</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,36 +1,51 @@
 # 🗺️ Indian Electoral Booth Sampling and Spatial Analysis Tool
 
-A production-ready Streamlit web application for intelligent sampling and spatial analysis of Indian electoral polling booths using AWS S3, geospatial analysis, and machine learning clustering algorithms.
+A modern, production-ready web application for intelligent sampling and spatial analysis of Indian electoral polling booths using FastAPI, AWS S3, geospatial analysis, and machine learning clustering algorithms.
 
 ## 🌟 Overview
 
-This tool helps electoral analysts and researchers perform systematic sampling of polling booths from Assembly Constituencies (AC) or Parliamentary Constituencies (PC) across Indian states. It uses KMeans clustering to ensure geographically distributed samples and provides interactive visualizations for analysis.
+This tool helps electoral analysts and researchers perform systematic sampling of polling booths from Assembly Constituencies (AC) or Parliamentary Constituencies (PC) across Indian states. It uses KMeans clustering to ensure geographically distributed samples and provides an elegant dark-themed interface with interactive visualizations for analysis.
 
 ## ✨ Key Features
 
+- **🎨 Modern Dark UI**: Elegant dark-themed interface inspired by modern web applications
+- **⚡ FastAPI Backend**: High-performance async API with RESTful endpoints
 - **☁️ Cloud-Native**: Fetches shapefiles directly from AWS S3 (no local storage required)
 - **🎯 Smart Clustering**: KMeans algorithm ensures geographically distributed booth selection
 - **🗺️ Interactive Maps**: Folium-based HTML maps with color-coded clusters
 - **📊 Batch Processing**: Process all ACs/PCs in a state simultaneously
 - **✅ Spatial Validation**: Ensures booths fall within constituency boundaries
-- **📥 Export Options**: Download summary and detailed booth data as CSV
+- **📥 Export Options**: Download summary, booth data as CSV, and maps as ZIP
 - **🚀 Real-time Processing**: Progress tracking with live updates
+- **📱 Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 
 ## 📁 Project Structure
 
 ```
 BoothMapping/
-├── app.py                      # Main Streamlit application
+├── main.py                     # FastAPI application & API routes
+├── app.py                      # Legacy Streamlit app (deprecated)
 ├── requirements.txt            # Python dependencies
-├── .env.example               # Environment variables template
+├── credintials.json           # AWS credentials (git-ignored in private repo)
 ├── .gitignore                 # Git ignore rules
 ├── README.md                  # This file
-├── utils/                     # Utility modules
+├── utils/                     # Backend utility modules
 │   ├── __init__.py
 │   ├── s3_utils.py           # AWS S3 operations
 │   ├── data_utils.py         # Data loading and validation
 │   ├── clustering_utils.py   # KMeans clustering logic
 │   └── map_utils.py          # Folium map generation
+├── templates/                 # Jinja2 HTML templates
+│   ├── landing.html          # Landing page
+│   ├── instructions.html     # Documentation page
+│   └── index.html            # Main application page
+├── static/                    # Frontend assets
+│   ├── css/
+│   │   ├── landing.css       # Landing page styles
+│   │   ├── instructions.css  # Instructions page styles
+│   │   └── app.css          # Application page styles
+│   └── js/
+│       └── script.js         # Frontend JavaScript
 └── output/                    # Generated outputs (git-ignored)
     └── maps/                  # HTML map files
 ```
@@ -62,23 +77,37 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. **Configure environment variables**:
-```bash
-cp .env.example .env
+4. **Configure AWS credentials**:
+
+Create `credintials.json` in the root directory:
+```json
+bucket_name = "your-bucket-name" 
+aws_access_key = "your-access-key"
+aws_secret_key = "your-secret-key"
 ```
 
-Edit `.env` file with your AWS credentials:
-```env
-AWS_BUCKET_NAME=your-bucket-name
-AWS_ACCESS_KEY=your-access-key
-AWS_SECRET_KEY=your-secret-key
-AWS_BASE_PREFIX=shp_files_state_wise/
+Or set environment variables:
+```bash
+export AWS_BUCKET_NAME=your-bucket-name
+export AWS_ACCESS_KEY=your-access-key
+export AWS_SECRET_KEY=your-secret-key
 ```
 
 5. **Run the application**:
 ```bash
-streamlit run app.py
+python main.py
 ```
+
+Or with uvicorn directly:
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+6. **Access the application**:
+- Open your browser and navigate to `http://localhost:8000`
+- Landing page: `http://localhost:8000/`
+- Instructions: `http://localhost:8000/instructions`
+- Main app: `http://localhost:8000/app`
 
 ## 📊 S3 Data Structure
 
@@ -107,18 +136,27 @@ your-bucket-name/
 
 ## 🎯 How to Use
 
-1. **Launch Application**: The app automatically connects to your S3 bucket
+### Landing Page
+1. **Start Mapping**: Navigate directly to the application
+2. **View Instructions**: Read comprehensive documentation
+
+### Main Application
+1. **Automatic Connection**: The app connects to your S3 bucket on startup
 2. **Select State**: Choose from available states in the dropdown
 3. **Choose Analysis Type**: Select AC wise or PC wise
 4. **Configure Sampling**:
    - Set samples per AC/PC (default: 300)
-   - Formula: clusters = samples ÷ 25
+   - Formula: `clusters = samples ÷ 25`
    - Each cluster selects 2 booths
 5. **Generate Results**: Click "Generate Results for All"
-6. **Download Outputs**:
+6. **View Results**:
+   - Summary statistics in cards
+   - Detailed tables for summary and selected booths
+   - Interactive maps for each constituency
+7. **Download Outputs**:
    - Summary CSV (processing statistics)
    - Selected Booths CSV (detailed booth information)
-   - HTML Maps (interactive visualizations)
+   - All Maps as ZIP (interactive visualizations)
 
 ## 🔄 Processing Workflow
 
@@ -209,30 +247,46 @@ For each cluster:
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: Streamlit 1.28+
+### Backend
+- **Framework**: FastAPI 0.104+ (High-performance async API)
+- **Server**: Uvicorn (ASGI server)
 - **Geospatial**: GeoPandas, Shapely
-- **Mapping**: Folium
 - **ML**: scikit-learn (KMeans)
 - **Cloud**: AWS S3 (boto3)
 - **Data Processing**: Pandas, NumPy
+- **Mapping**: Folium
+
+### Frontend
+- **Templating**: Jinja2
+- **Styling**: Custom CSS (Dark theme)
+- **JavaScript**: Vanilla JS (No framework dependencies)
+- **Design**: Responsive, mobile-first approach
 
 ## 📦 Dependencies
 
 See [requirements.txt](requirements.txt) for full list:
-- python-dotenv - Environment variable management
-- streamlit - Web application framework
-- geopandas - Geospatial data processing
-- boto3 - AWS S3 integration
-- scikit-learn - Machine learning (KMeans)
-- folium - Interactive maps
+- **fastapi** - Modern web framework
+- **uvicorn** - ASGI server
+- **jinja2** - Template engine
+- **python-multipart** - Form data parsing
+- **python-dotenv** - Environment variable management
+- **geopandas** - Geospatial data processing
+- **boto3** - AWS S3 integration
+- **scikit-learn** - Machine learning (KMeans)
+- **folium** - Interactive maps
+- **pandas** - Data manipulation
+- **numpy** - Numerical computing
+- **shapely** - Geometric operations
+- **geopy** - Distance calculations
 
 ## 🔒 Security Best Practices
 
-1. **Never commit credentials**: Use `.env` file (git-ignored)
+1. **Credentials**: This is a private repo - `credintials.json` is included but keep repo private
 2. **Use IAM roles**: Prefer IAM roles over access keys in production
 3. **Rotate keys**: Regularly rotate AWS access keys
 4. **Least privilege**: Grant minimum required S3 permissions
 5. **Use HTTPS**: S3 client uses encrypted connections by default
+6. **Production**: Use environment variables instead of credentials file
 
 ### Required S3 Permissions
 ```json
@@ -291,6 +345,25 @@ Contributions welcome! Please:
 3. Make changes with clear commit messages
 4. Submit a pull request
 
+## 🚀 API Endpoints
+
+### Web Routes
+- `GET /` - Landing page
+- `GET /instructions` - Documentation page
+- `GET /app` - Main application interface
+
+### API Routes
+- `GET /api/states` - List available states
+- `GET /api/ac_pc_list/{state}/{selection_type}` - Get AC/PC list for state
+- `POST /api/process` - Process booth mapping for all constituencies
+- `GET /api/results/summary` - Get summary data
+- `GET /api/results/selected_booths` - Get selected booths data
+- `GET /api/results/maps` - Get list of available maps
+- `GET /api/map/{filename}` - View specific map
+- `GET /api/download/summary` - Download summary CSV
+- `GET /api/download/selected_booths` - Download selected booths CSV
+- `GET /api/download/maps` - Download all maps as ZIP
+
 ## 📄 License
 
 This project is provided as-is for electoral analysis and research purposes.
@@ -298,8 +371,9 @@ This project is provided as-is for electoral analysis and research purposes.
 ## 🙏 Acknowledgments
 
 - **Data Source**: Election Commission of India
-- **Built with**: Streamlit, GeoPandas, Folium, scikit-learn
+- **Built with**: FastAPI, GeoPandas, Folium, scikit-learn
 - **Cloud Platform**: AWS S3
+- **Design Inspiration**: Modern web applications with dark themes
 
 ## 📧 Contact
 

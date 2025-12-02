@@ -9,16 +9,12 @@ load_dotenv()
 
 class S3Manager:
     def __init__(self):
-        try:
-            import streamlit as st
-            self.bucket_name = st.secrets.get("AWS_BUCKET_NAME", os.getenv("AWS_BUCKET_NAME"))
-            aws_access_key = st.secrets.get("AWS_ACCESS_KEY", os.getenv("AWS_ACCESS_KEY"))
-            aws_secret_key = st.secrets.get("AWS_SECRET_KEY", os.getenv("AWS_SECRET_KEY"))
-        except:
-            self.bucket_name = os.getenv("AWS_BUCKET_NAME")
-            aws_access_key = os.getenv("AWS_ACCESS_KEY")
-            aws_secret_key = os.getenv("AWS_SECRET_KEY")
+        # Try to load from environment variables first
+        self.bucket_name = os.getenv("AWS_BUCKET_NAME")
+        aws_access_key = os.getenv("AWS_ACCESS_KEY")
+        aws_secret_key = os.getenv("AWS_SECRET_KEY")
         
+        # If not found, try to load from credintials.json
         if not all([self.bucket_name, aws_access_key, aws_secret_key]):
             cred_file = Path("credintials.json")
             if cred_file.exists():
