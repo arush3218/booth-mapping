@@ -19,37 +19,6 @@ This tool helps electoral analysts and researchers perform systematic sampling o
 - **🚀 Real-time Processing**: Progress tracking with live updates
 - **📱 Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 
-## 📁 Project Structure
-
-```
-BoothMapping/
-├── main.py                     # FastAPI application & API routes
-├── app.py                      # Legacy Streamlit app (deprecated)
-├── requirements.txt            # Python dependencies
-├── credintials.json           # AWS credentials (git-ignored in private repo)
-├── .gitignore                 # Git ignore rules
-├── README.md                  # This file
-├── utils/                     # Backend utility modules
-│   ├── __init__.py
-│   ├── s3_utils.py           # AWS S3 operations
-│   ├── data_utils.py         # Data loading and validation
-│   ├── clustering_utils.py   # KMeans clustering logic
-│   └── map_utils.py          # Folium map generation
-├── templates/                 # Jinja2 HTML templates
-│   ├── landing.html          # Landing page
-│   ├── instructions.html     # Documentation page
-│   └── index.html            # Main application page
-├── static/                    # Frontend assets
-│   ├── css/
-│   │   ├── landing.css       # Landing page styles
-│   │   ├── instructions.css  # Instructions page styles
-│   │   └── app.css          # Application page styles
-│   └── js/
-│       └── script.js         # Frontend JavaScript
-└── output/                    # Generated outputs (git-ignored)
-    └── maps/                  # HTML map files
-```
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -108,31 +77,6 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 - Landing page: `http://localhost:8000/`
 - Instructions: `http://localhost:8000/instructions`
 - Main app: `http://localhost:8000/app`
-
-## 📊 S3 Data Structure
-
-Your S3 bucket should follow this structure:
-
-```
-your-bucket-name/
-└── shp_files_state_wise/
-    ├── andhrapradesh/
-    │   ├── andhrapradesh.assembly.shp
-    │   ├── andhrapradesh.assembly.shx
-    │   ├── andhrapradesh.assembly.dbf
-    │   ├── andhrapradesh.assembly.prj
-    │   ├── andhrapradesh.parliamentary.shp
-    │   ├── andhrapradesh.parliamentary.shx
-    │   ├── andhrapradesh.parliamentary.dbf
-    │   ├── andhrapradesh.parliamentary.prj
-    │   ├── andhrapradesh.booth.shp
-    │   ├── andhrapradesh.booth.shx
-    │   ├── andhrapradesh.booth.dbf
-    │   └── andhrapradesh.booth.prj
-    ├── maharashtra/
-    │   └── [similar structure]
-    └── [other states...]
-```
 
 ## 🎯 How to Use
 
@@ -196,54 +140,6 @@ For each cluster:
 - **selected_booths.csv**: Detailed booth information
 - **HTML maps**: One per AC/PC (zipped download)
 
-## 📋 Output Format
-
-### Summary CSV Columns
-| Column | Description |
-|--------|-------------|
-| AC/PC | Constituency code |
-| AC_Name/PC_Name | Constituency name |
-| Total_Booths | Total booths in constituency |
-| Selected_Booths | Number of booths selected |
-| Status | Completed / Not completed |
-| Reason | Explanation if incomplete |
-| Samples_Requested | Target sample size |
-
-### Selected Booths CSV Columns
-| Column | Description |
-|--------|-------------|
-| state | State name |
-| district, district_n | District information |
-| pc, pc_name | Parliamentary constituency |
-| ac, ac_name | Assembly constituency |
-| booth, booth_name | Booth code and name |
-| cluster | Assigned cluster number |
-| latitude, longitude | GPS coordinates |
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| AWS_BUCKET_NAME | S3 bucket name | `electoral-shapefiles` |
-| AWS_ACCESS_KEY | AWS access key ID | `AKIA...` |
-| AWS_SECRET_KEY | AWS secret access key | `wJalrXU...` |
-| AWS_BASE_PREFIX | Base folder in S3 | `shp_files_state_wise/` |
-
-### Shapefile Requirements
-
-**AC/PC Shapefiles** (Polygon):
-- `AC_NO`/`PC_NO` or `AC`/`PC` - Constituency code
-- `AC_NAME`/`PC_NAME` - Constituency name
-- Polygon geometry
-
-**Booth Shapefiles** (Point):
-- `BOOTH_NO` or `BOOTH` - Booth code
-- `BOOTH_NAME` - Booth name
-- `AC_NO`/`PC_NO` - Constituency reference
-- `DISTRICT`, `DISTRICT_N` - District info
-- Point geometry
 
 ## 🛠️ Technology Stack
 
@@ -288,25 +184,6 @@ See [requirements.txt](requirements.txt) for full list:
 5. **Use HTTPS**: S3 client uses encrypted connections by default
 6. **Production**: Use environment variables instead of credentials file
 
-### Required S3 Permissions
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:ListBucket",
-        "s3:GetObject"
-      ],
-      "Resource": [
-        "arn:aws:s3:::your-bucket-name",
-        "arn:aws:s3:::your-bucket-name/*"
-      ]
-    }
-  ]
-}
-```
 
 ## 🐛 Troubleshooting
 
@@ -344,41 +221,5 @@ Contributions welcome! Please:
 2. Create a feature branch
 3. Make changes with clear commit messages
 4. Submit a pull request
-
-## 🚀 API Endpoints
-
-### Web Routes
-- `GET /` - Landing page
-- `GET /instructions` - Documentation page
-- `GET /app` - Main application interface
-
-### API Routes
-- `GET /api/states` - List available states
-- `GET /api/ac_pc_list/{state}/{selection_type}` - Get AC/PC list for state
-- `POST /api/process` - Process booth mapping for all constituencies
-- `GET /api/results/summary` - Get summary data
-- `GET /api/results/selected_booths` - Get selected booths data
-- `GET /api/results/maps` - Get list of available maps
-- `GET /api/map/{filename}` - View specific map
-- `GET /api/download/summary` - Download summary CSV
-- `GET /api/download/selected_booths` - Download selected booths CSV
-- `GET /api/download/maps` - Download all maps as ZIP
-
-## 📄 License
-
-This project is provided as-is for electoral analysis and research purposes.
-
-## 🙏 Acknowledgments
-
-- **Data Source**: Election Commission of India
-- **Built with**: FastAPI, GeoPandas, Folium, scikit-learn
-- **Cloud Platform**: AWS S3
-- **Design Inspiration**: Modern web applications with dark themes
-
-## 📧 Contact
-
-For issues or questions, please open an issue on GitHub.
-
----
 
 **⚠️ Important**: This tool is for research and analysis purposes. Ensure compliance with data usage policies and electoral regulations in your jurisdiction.
